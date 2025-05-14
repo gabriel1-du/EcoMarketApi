@@ -1,0 +1,3 @@
+[submodule "PedidoApi"]
+	path = PedidoApi
+	url = https://github.com/gabriel1-du/ApiPedido
