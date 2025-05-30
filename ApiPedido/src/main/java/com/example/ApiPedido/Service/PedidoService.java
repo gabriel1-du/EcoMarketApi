@@ -1,79 +1,97 @@
 package com.example.ApiPedido.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-//Importar ese optional , no otro
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.ApiPedido.Model.Carrito;
+import com.example.ApiPedido.Model.ItemCarrito;
 import com.example.ApiPedido.Model.ItemPedido;
 import com.example.ApiPedido.Model.Pedido;
+import com.example.ApiPedido.Model.Producto;
+import com.example.ApiPedido.Repository.CarritoRepository;
 import com.example.ApiPedido.Repository.PedidoRepository;
+import com.example.ApiPedido.Repository.ProductoRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PedidoService {
-    
 
-    @Autowired //Inyeccion de repo
+    //Inyecciones Repositorios
+    @Autowired
+    private CarritoRepository carritoRepository;
+    @Autowired
     private PedidoRepository pedidoRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
 
+    //-------------
+    //Metodos para crear
+    //--------------
 
-   
+    public Pedido crearPedidoDesdeCarrito(Integer carritoId) {
+        // Buscar el carrito
+        Carrito carrito = carritoRepository.findById(carritoId)
+            .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
+        // Crear el pedido
+        Pedido pedido = new Pedido();
+        pedido.setFecha(LocalDate.now());
+        pedido.setUsuario(carrito.getUsuario());
+        pedido.setItems(carrito.getItems()); // si los items del carrito se pueden copiar directamente
 
-    // BUSCAR pedido por ID
-    public Pedido getById(Integer id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id); // Busca por ID
-        return pedido.orElse(null); // Si no la encuentra, retorna null
-    }
-
-    
-    // CREAR PEDIDO
-    public Pedido add(Pedido pedido) {
-        return pedidoRepository.save(pedido); // GUARDA y RETORNA el PEDIDO
-    }
-
-    //ACTUALIZAR una persona existente
-    public Pedido update(Integer id, Pedido pedido) {
-        if (pedidoRepository.existsById(id)) {
-            pedido.setId(id); // Aseguramos que se use el mismo ID
-            return pedidoRepository.save(pedido); // Guarda los cambios
-        }
-        return null; // No se encontró pedido
-    }//opcional : Averiguar como dejar un mensaje escrito 
-
-
-    // ELIMINAR una PEDIDO por ID
-    public Pedido delete(Integer id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        if (pedido.isPresent()) {
-            pedidoRepository.deleteById(id); // Elimina la PEDIDO
-            return pedido.get(); // Retorna PEDIDO eliminada
-        }
-        return null; // No existe El pedido
-    }//opcional : Averiguar como dejar un mensaje escrito 
-
-
-    //Crea un pedido De forma Automatica
-    public Pedido crearPedido(Pedido pedido) {
-        int total = 0;
-
-        for (ItemPedido item : pedido.getItems()) {
-            int subtotal = item.getPrecioUnitario() * item.getCantidad();
-            total += subtotal;
-        }
-
-        pedido.setTotal(total);
+        // Guardar el pedido
         return pedidoRepository.save(pedido);
     }
+}
+    //------------
+    //Metodos para obtener
+    //-----------
 
-
-    //---------------------
-    //Metodos para buscar
-    //---------------------
-
+    //Obtener todos los pedidos
     public List<Pedido> getAll() {
         return pedidoRepository.findAll(); 
+    }
+
+    //Obtener un pedido por Id
+    public Pedido getById(Integer id) {
+        return pedidoRepository.findById(id).orElse(null);
+    }
+    
+
+    //-----------------
+    //Metodos para actualizar
+    //------------------
+
+    //Actualizar un pedido
+    public Pedido update(Integer id, Pedido pedido) {
+        Optional<Pedido> existenteOpt = pedidoRepository.findById(id);
+            if (existenteOpt.isPresent()) {
+            Pedido existente = existenteOpt.get();
+
+            // Solo se permite actualizar estado por ahora
+            existente.setEstado(pedido.getEstado());
+
+        return pedidoRepository.save(existente);
+        }
+        return null;
+   }
+
+   //-------------
+   //Metodo para eliminar
+   //------------
+   public Pedido delete(Integer id) {
+    Optional<Pedido> pedido = pedidoRepository.findById(id);
+    if (pedido.isPresent()) {
+        pedidoRepository.deleteById(id);
+        return pedido.get();
+    }
+    return null;
     }
 }

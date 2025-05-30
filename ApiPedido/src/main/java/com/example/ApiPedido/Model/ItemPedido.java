@@ -17,26 +17,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ItemPedido")
 @Data
-public class ItemPedido {
+    public class ItemPedido {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
-    private Integer id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "item_id")
+        private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "pedido_id", nullable = false)
-    private Pedido pedido;
+        @ManyToOne
+        @JoinColumn(name = "pedido_id", nullable = false)
+        private Pedido pedido;
 
-    @Column(name = "producto_id", nullable = false)
-    private Integer productoId;
+        @Column(name = "producto_id", nullable = false)
+        private Integer productoId;
 
-    @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
+        @Column(name = "cantidad", nullable = false)
+        private Integer cantidad;
 
-    @Column(name = "precio_unitario", nullable = false)
-    private Integer precioUnitario;
+        @Column(name = "precio_unitario", nullable = false)
+        private Integer precioUnitario;
 
 
 
-}
+    }

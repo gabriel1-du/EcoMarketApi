@@ -1,6 +1,6 @@
 package com.example.ApiPedido.Model;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -8,13 +8,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,25 +23,20 @@ import lombok.NoArgsConstructor;
 @Data
 public class Carrito {
 
-
     @Id
-    @Column(name = "carrito_id") 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "carrito_id")
     private Integer id;
 
-    //Relacion a usuario
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    //Relacion a carrito
-    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+        mappedBy = "carrito",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     @JsonManagedReference
-    private List<ItemCarrito> items;
-    
-    @Column(name = "total")
-    private BigDecimal total;
-
-    @Column(name = "activo")
-    private Boolean activo;
+    private List<ItemCarrito> items = new ArrayList<>();
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,22 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ApiPedido.Model.Pedido;
 import com.example.ApiPedido.Service.PedidoService;
 
-@Controller
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
-@RequestMapping("/api/pedido") // Ruta base para esta API
+@RequestMapping("/api/pedido")
 public class PedidoController {
 
+    
+     public PedidoController() {
+        System.out.println(">>> PedidoController CARGADO EXITOSAMENTE");
+    }
 
- @Autowired // Inyección del servicio de pedido
+    @Autowired
     private PedidoService pedidoService;
 
-    // Obtener todos los pedidos (GET /api/pedido)
-    @GetMapping
-    public ResponseEntity<List<Pedido>> getAll() {
-        return ResponseEntity.ok(pedidoService.getAll());
-    }
-    
-    // Obtener un pedido por su ID (GET /api/pedido/{id})
+
+    //-------------------
+    //METODOS GET
+    //-----------------
+    // Obtener pedido por ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         Pedido pedido = pedidoService.getById(id);
@@ -44,14 +46,34 @@ public class PedidoController {
         }
     }
 
-    // Crear un nuevo pedido (POST /api/pedido)
-    @PostMapping
-    public ResponseEntity<?> add(@RequestBody Pedido pedido) {
-        Pedido nuevo = pedidoService.add(pedido);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+    //Obtener todos 
+    @GetMapping
+    public ResponseEntity<List<Pedido>> getAll() {
+        return ResponseEntity.ok(pedidoService.getAll());
     }
 
-    // Actualizar un pedido existente (PUT /api/pedido/{id})
+      
+    
+    //-----------------
+    //METODOS POST
+    //-----------------
+
+    // Crear pedido A PARTIR DEL CARRITO ruta = (POST /api/pedido/{carritoId})
+    @PostMapping("/{carritoId}")
+    public ResponseEntity<?> crearPedidoDesdeCarrito(@PathVariable Integer carritoId) {
+        try {
+            Pedido nuevoPedido = pedidoService.crearPedidoDesdeCarrito(carritoId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
+        } catch (EntityNotFoundException | IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
+    //---------------
+    //Metodos PUT
+    //---------------
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Pedido pedido) {
         Pedido actualizado = pedidoService.update(id, pedido);
@@ -62,7 +84,10 @@ public class PedidoController {
         }
     }
 
-    // Eliminar un pedido por su ID (DELETE /api/pedido/{id})
+    //---------------
+    //METODOS DELETE
+    //-----------------
+    // Eliminar pedido
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         Pedido eliminado = pedidoService.delete(id);
@@ -72,6 +97,8 @@ public class PedidoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido no encontrado para eliminar");
         }
     }
+
+
 
 
 }
