@@ -19,10 +19,7 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
 
 
-    // OBETNER todas los PEDIDO del dba
-    public List<Pedido> getAll() {
-        return pedidoRepository.findAll(); 
-    }
+   
 
 
     // BUSCAR pedido por ID
@@ -72,4 +69,11 @@ public class PedidoService {
     }
 
 
+    //---------------------
+    //Metodos para buscar
+    //---------------------
+
+    public List<Pedido> getAll() {
+        return pedidoRepository.findAll(); 
+    }
 }
