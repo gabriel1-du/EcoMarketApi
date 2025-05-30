@@ -42,7 +42,7 @@ public class PedidoService {
 
         // Crear el pedido
         Pedido pedido = new Pedido();
-        pedido.setFecha(LocalDate.now());
+        pedido.setFechaPedido(LocalDateTime.now());
         pedido.setUsuario(carrito.getUsuario());
         pedido.setItems(carrito.getItems()); // si los items del carrito se pueden copiar directamente
 

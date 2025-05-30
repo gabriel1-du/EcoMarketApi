@@ -3,6 +3,7 @@ package com.example.ApiPedido.DTO;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.ApiPedido.Model.ItemCarrito;
 import com.example.ApiPedido.Model.ItemPedido;
 import com.example.ApiPedido.Model.Pedido;
 import com.example.ApiPedido.Model.Usuario;
@@ -42,5 +43,17 @@ public class PedidoMapper {
         dto.setItems(items);
 
         return dto;
+    }
+
+     /**
+     * Convierte un ItemCarrito (entidad) en ItemPedido (entidad).
+     */
+    public static ItemPedido fromCarrito(ItemCarrito ic) {
+        ItemPedido ip = new ItemPedido();
+        ip.setProductoId(ic.getProductoId());
+        ip.setCantidad(ic.getCantidad());
+        // El precio lo obtienes vía productoRepository en el service, o si ic trae precio:
+        ip.setPrecioUnitario(ic.getPrecioUnitario());
+        return ip;
     }
 }
